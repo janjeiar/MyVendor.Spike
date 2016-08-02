@@ -2,6 +2,8 @@
 
 namespace MyVendor\Spike\Resource\Page;
 
+use BEAR\Package\Bootstrap;
+
 class IndexTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -12,25 +14,27 @@ class IndexTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->resource = clone $GLOBALS['RESOURCE'];
+        $app = (new Bootstrap)->getApp('MyVendor\Spike', 'prod-api-app');
+        $this->resource = $app->resource;
     }
 
     public function testOnGet()
     {
         // resource request
-        $page = $this->resource->get->uri('page://self/index')->withQuery(['name' => 'koriym'])->eager->request();
+        $page = $this->resource->get->uri('page://self/index')->withQuery(['key' => 'key1'])->eager->request();
         $this->assertSame(200, $page->code);
-        $this->assertSame('Hello koriym', $page['greeting']);
-
-        return $page;
+        $this->assertSame('key1', $page['key']);
+        $this->assertSame('news', $page['cat']);
+        $this->assertSame(null, $page['limit']);
     }
 
-    /**
-     * @depends testOnGet
-     */
-    public function testView($page)
+    public function testOnGet2()
     {
-        $json = json_decode((string) $page);
-        $this->assertSame('Hello koriym', $json->greeting);
+        // resource request
+        $page = $this->resource->get->uri('page://self/index')->withQuery(['key' => 'key1', 'limit' => '10'])->eager->request();
+        $this->assertSame(200, $page->code);
+        $this->assertSame('key1', $page['key']);
+        $this->assertSame('news', $page['cat']);
+        $this->assertSame('10', $page['limit']);
     }
 }
