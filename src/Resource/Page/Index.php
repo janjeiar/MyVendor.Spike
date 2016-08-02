@@ -2,13 +2,19 @@
 
 namespace MyVendor\Spike\Resource\Page;
 
+use BEAR\RepositoryModule\Annotation\Cacheable;
 use BEAR\Resource\ResourceObject;
 
+/**
+ * @Cacheable
+ */
 class Index extends ResourceObject
 {
-    public function onGet($name = 'BEAR.Sunday')
+    public function onGet($key, $cat = 'news', $limit = null)
     {
-        $this['greeting'] = 'Hello ' . $name;
+        $this->body['key'] = $key;
+        $this->body['cat'] = $cat;
+        $this->body['limit'] = $limit;
 
         return $this;
     }
